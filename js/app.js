@@ -9,7 +9,7 @@ import {
   filtrarTalleres
 } from "./talleres.js";
 
-// ---------- Datos en memoria (se cargan al arrancar el servidor) ----------
+// ---------- Datos en memoria (se cargan al arrancar el servidor UUUUUUUU) ----------
 // taller 1 -> 19 plazas disponibles | taller 2 -> última plaza | taller 3 -> completo
 
 const talleres = [
