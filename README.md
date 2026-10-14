@@ -67,6 +67,12 @@ Muestra los talleres disponibles y calcula las plazas restantes de cada uno.
 curl http://localhost:3000/talleres
 ```
 
+**Equivalente HTML:** enlace "Talleres" del menú superior.
+
+```html
+<a href="/talleres">Talleres</a>
+```
+
 ### 2. Filtros
 
 Permite filtrar los talleres por categoría, nivel y disponibilidad. Los filtros pueden combinarse.
@@ -75,7 +81,19 @@ Permite filtrar los talleres por categoría, nivel y disponibilidad. Los filtros
 curl "http://localhost:3000/talleres?categoria=web"
 curl "http://localhost:3000/talleres?nivel=avanzado"
 curl "http://localhost:3000/talleres?disponibles=true"
+curl "http://localhost:3000/talleres?categoria=web&disponibles=true"
 curl "http://localhost:3000/talleres?categoria=web&nivel=avanzado&disponibles=true"
+```
+
+**Equivalente HTML:** formulario GET del listado, con dos desplegables (categoría y nivel) y la casilla "Solo con plazas".
+
+```html
+<form action="/talleres" method="get">
+  <select name="categoria">...</select>
+  <select name="nivel">...</select>
+  <input type="checkbox" name="disponibles" value="true">
+  <button type="submit">Filtrar</button>
+</form>
 ```
 
 ### 3. Ficha del taller
@@ -88,12 +106,24 @@ curl http://localhost:3000/talleres/2
 curl http://localhost:3000/talleres/3
 ```
 
+**Equivalente HTML:** enlace "Ver ficha" de cada taller en el listado.
+
+```html
+<a href="/talleres/1">Ver ficha</a>
+```
+
 ### 4. Formulario de inscripción
 
 Permite introducir el nombre y el correo electrónico para inscribirse en un taller. Si el taller está completo, se informa al usuario.
 
 ```bash
 curl http://localhost:3000/talleres/1/inscripcion
+```
+
+**Equivalente HTML:** enlace "Inscribirme" de la ficha del taller.
+
+```html
+<a href="/talleres/1/inscripcion">Inscribirme</a>
 ```
 
 ### 5. Procesamiento de inscripciones
@@ -108,6 +138,16 @@ curl -i -X POST \
 ```
 
 La opción `-i` permite consultar las cabeceras HTTP de la respuesta, incluida la redirección `303`.
+
+**Equivalente HTML:** formulario de inscripción (botón "Inscribirme").
+
+```html
+<form action="/talleres/1/inscripcion" method="post">
+  <input type="text" name="nombre">
+  <input type="text" name="email">
+  <button type="submit">Inscribirme</button>
+</form>
+```
 
 ### 6. Validaciones y gestión de errores
 
@@ -138,11 +178,30 @@ curl -X POST \
   --data-urlencode "email=mal" \
   http://localhost:3000/talleres/1/inscripcion
 
+# Correo ya inscrito en ese taller
+curl -X POST \
+  --data-urlencode "nombre=Curro" \
+  --data-urlencode "email=currox@example.com" \
+  http://localhost:3000/talleres/1/inscripcion
+
+# Taller completo
+curl -X POST \
+  --data-urlencode "nombre=Ana" \
+  --data-urlencode "email=ana@example.com" \
+  http://localhost:3000/talleres/3/inscripcion
+
 # Taller inexistente
 curl -i http://localhost:3000/talleres/999
 
 # Identificador inválido
 curl -i http://localhost:3000/talleres/abc
+```
+
+**Equivalente HTML:** los errores de datos, correo repetido y taller completo se provocan con el mismo formulario de inscripción del apartado 5. Para el taller inexistente y el identificador inválido, hay enlaces de prueba al final del listado de talleres.
+
+```html
+<a href="/talleres/999">taller inexistente</a>
+<a href="/talleres/abc">identificador manipulado</a>
 ```
 
 La aplicación trata los datos recibidos del navegador como información no fiable y valida las entradas antes de procesarlas.
