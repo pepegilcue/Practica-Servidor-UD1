@@ -1,0 +1,35 @@
+<%- include("partials/header", { titulo }) %>
+
+<h2>Inscripción: <%= taller.titulo %></h2>
+
+<% if (estado === "completo") { %>
+  <p>🔴 Completo</p>
+<% } else if (estado === "ultima") { %>
+  <p>🟡 Última plaza disponible</p>
+<% } else { %>
+  <p>🟢 <%= plazasRestantes %> plazas disponibles</p>
+<% } %>
+
+<% if (errores.general) { %>
+  <p class="error"><%= errores.general %></p>
+<% } %>
+
+<form action="/talleres/<%= taller.id %>/inscripcion" method="post">
+  <label for="nombre">Nombre</label>
+  <input type="text" id="nombre" name="nombre" value="<%= datos.nombre %>">
+  <% if (errores.nombre) { %>
+    <p class="error"><%= errores.nombre %></p>
+  <% } %>
+
+  <label for="email">Correo electrónico</label>
+  <input type="text" id="email" name="email" value="<%= datos.email %>">
+  <% if (errores.email) { %>
+    <p class="error"><%= errores.email %></p>
+  <% } %>
+
+  <button type="submit">Inscribirme</button>
+</form>
+
+<p><a href="/talleres/<%= taller.id %>">← Volver a la ficha</a></p>
+
+<%- include("partials/footer") %>
