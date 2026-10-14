@@ -1,0 +1,58 @@
+<%- include("partials/header", { titulo }) %>
+
+<h2>Talleres</h2>
+
+<form action="/talleres" method="get">
+  <label for="categoria">Categoría</label>
+  <select id="categoria" name="categoria">
+    <option value="">Todas</option>
+    <% for (const c of categorias) { %>
+      <option value="<%= c %>" <%= filtros.categoria === c ? "selected" : "" %>><%= c %></option>
+    <% } %>
+  </select>
+
+  <label for="nivel">Nivel</label>
+  <select id="nivel" name="nivel">
+    <option value="">Todos</option>
+    <% for (const n of niveles) { %>
+      <option value="<%= n %>" <%= filtros.nivel === n ? "selected" : "" %>><%= n %></option>
+    <% } %>
+  </select>
+
+  <label>
+    <input type="checkbox" name="disponibles" value="true" <%= filtros.disponibles === "true" ? "checked" : "" %>>
+    Solo con plazas
+  </label>
+
+  <button type="submit">Filtrar</button>
+  <a href="/talleres">Quitar filtros</a>
+</form>
+
+<% if (talleres.length === 0) { %>
+  <p>No hay talleres con esos filtros.</p>
+<% } else { %>
+  <% for (const t of talleres) { %>
+    <article class="taller">
+      <h3><%= t.titulo %></h3>
+      <p>Categoría: <%= t.categoria %> · Nivel: <%= t.nivel %></p>
+      <% if (t.plazasRestantes <= 0) { %>
+        <p>Completo</p>
+      <% } else if (t.plazasRestantes === 1) { %>
+        <p>Última plaza disponible</p>
+      <% } else { %>
+        <p>🟢 <%= t.plazasRestantes %> plazas disponibles</p>
+      <% } %>
+      <a href="/talleres/<%= t.id %>">Ver ficha</a>
+    </article>
+  <% } %>
+<% } %>
+
+<p>
+  <small>
+    Enlaces de prueba:
+    <a href="/talleres/999">taller inexistente</a> ·
+    <a href="/talleres/abc">identificador manipulado</a>
+  </small>
+</p>
+
+<%- include("partials/footer") %>
