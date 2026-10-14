@@ -1,97 +1,75 @@
-# 🎓 Inscripción a talleres
+# Inscripción a talleres
 
-Aplicación web para consultar los talleres de unas jornadas tecnológicas y apuntarse a ellos. Hecha con **Node.js**, **Express** y **EJS**.
+Aplicación web para consultar los talleres de unas jornadas tecnológicas e inscribirse en ellos. Desarrollada con **Node.js**, **Express** y **EJS**.
 
-> 💾 Los datos se guardan en memoria: al parar el servidor se reinician.
+Los datos se almacenan en memoria, por lo que las inscripciones se reinician al detener el servidor.
 
-🤖 **Chat de apoyo:** <PEGAR AQUÍ EL ENLACE AL CHAT>
+**Chat de apoyo: Enviado por privado
 
----
+## Instalación y ejecución
 
-## 🚀 Cómo arrancarla
+Instalar las dependencias:
 
 ```bash
-npm install
+npm init -y
+npm install express
+npm install ejs
+```
+
+Iniciar el servidor:
+
+```bash
 npm start
 ```
 
-Después abre 👉 `http://localhost:3000`
+Acceder a la aplicación desde el navegador:
 
----
+`http://localhost:3000`
 
-## 📁 Qué hay en el proyecto
+## Estructura del proyecto
 
-| Fichero | Para qué sirve |
+| Archivo o carpeta | Descripción |
 |---|---|
-| `js/app.js` | 🧑‍🍳 El servidor: guarda los datos, tiene las rutas y decide qué responder |
-| `js/talleres.js` | 🧮 Las funciones que calculan y validan (no saben nada del navegador) |
-| `views/` | 🖼️ Las páginas que ve el usuario (listado, ficha, inscripción y error) |
+| `js/app.js` | Servidor, rutas y gestión de las peticiones. |
+| `js/talleres.js` | Funciones de cálculo y validación. |
+| `views/` | Plantillas EJS de las páginas de la aplicación. |
 
----
+## Funcionamiento
 
-## 🧠 La idea en 30 segundos
+La aplicación gestiona dos listas en memoria: talleres e inscripciones.
 
-- Hay **dos listas** en memoria: talleres e inscripciones.
-- Las plazas que quedan **no se guardan, se calculan**:
-  `plazas restantes = plazas del taller − inscripciones de ese taller`
-- Cada ficha tiene uno de **tres estados**:
+Las plazas disponibles se calculan restando las inscripciones realizadas al número total de plazas de cada taller.
 
-| Estado | Cuándo | Qué se ve |
+Cada taller puede encontrarse en uno de estos estados:
+
+| Estado | Condición |
+|---|---|
+| Disponible | Quedan dos o más plazas. |
+| Última plaza | Queda una plaza. |
+| Completo | No quedan plazas. |
+
+## Rutas de la aplicación
+
+| Método | Ruta | Descripción |
 |---|---|---|
-| 🟢 Disponible | Quedan 2 o más plazas | "N plazas disponibles" |
-| 🟡 Última plaza | Queda 1 | "Última plaza disponible" |
-| 🔴 Completo | Quedan 0 | "Completo" |
+| GET | `/talleres` | Muestra el listado de talleres y permite aplicar filtros. |
+| GET | `/talleres/:id` | Muestra los detalles de un taller. |
+| GET | `/talleres/:id/inscripcion` | Muestra el formulario de inscripción. |
+| POST | `/talleres/:id/inscripcion` | Valida y procesa la inscripción. |
 
----
+## Funcionalidades
 
-## 🗺️ Rutas
+### 1. Listado de talleres
 
-| Método | Ruta | Qué hace |
-|---|---|---|
-| GET | `/talleres` | Lista los talleres (con filtros opcionales) |
-| GET | `/talleres/:id` | Ficha de un taller |
-| GET | `/talleres/:id/inscripcion` | Muestra el formulario |
-| POST | `/talleres/:id/inscripcion` | Procesa la inscripción |
-
----
-
-## 🔄 Qué pasa cuando alguien se inscribe
-
-```mermaid
-flowchart TD
-    A[Envía el formulario] --> B{¿Existe el taller?}
-    B -- No --> E1[Error 404 / 400]
-    B -- Sí --> C{¿Nombre y correo válidos?}
-    C -- No --> F[Vuelve al formulario con errores]
-    C -- Sí --> D{¿Quedan plazas?}
-    D -- No --> F
-    D -- Sí --> G{¿Correo ya inscrito?}
-    G -- Sí --> F
-    G -- No --> H[Guarda la inscripción]
-    H --> I[Redirige a la ficha: PRG]
-```
-
-Cuando hay un fallo, el formulario se muestra otra vez **con lo que estaba bien ya escrito** y los mensajes de error.
-
----
-
-## ✨ Funcionalidades
-
-### 1️⃣ Listado de talleres
-
-La página `/talleres` coge todos los talleres y calcula las plazas que quedan de cada uno.
+Muestra los talleres disponibles y calcula las plazas restantes de cada uno.
 
 ```bash
 curl http://localhost:3000/talleres
 ```
 
-🖱️ **En la web:** enlace "Talleres" del menú.
+### 2. Filtros
 
----
-
-### 2️⃣ Filtros
-
-Se pueden filtrar por **categoría**, **nivel** y **disponibilidad**, y combinar los tres a la vez. El servidor lee los filtros de la dirección y se queda solo con los talleres que los cumplen.
+Permite filtrar los talleres por categoría, nivel y disponibilidad. Los filtros pueden combinarse.
 
 ```bash
 curl "http://localhost:3000/talleres?categoria=web"
@@ -100,39 +78,27 @@ curl "http://localhost:3000/talleres?disponibles=true"
 curl "http://localhost:3000/talleres?categoria=web&nivel=avanzado&disponibles=true"
 ```
 
-🖱️ **En la web:** formulario de filtros en el listado, con dos desplegables y una casilla "Solo con plazas".
+### 3. Ficha del taller
 
----
-
-### 3️⃣ Ficha del taller
-
-`/talleres/:id` busca el taller por su número y enseña sus datos. El mensaje cambia según las plazas que queden (los tres estados de arriba).
+Muestra la información de cada taller y su estado de disponibilidad.
 
 ```bash
-curl http://localhost:3000/talleres/1   # 🟢 plazas disponibles
-curl http://localhost:3000/talleres/2   # 🟡 última plaza
-curl http://localhost:3000/talleres/3   # 🔴 completo
+curl http://localhost:3000/talleres/1
+curl http://localhost:3000/talleres/2
+curl http://localhost:3000/talleres/3
 ```
 
-🖱️ **En la web:** enlace "Ver ficha" en cada taller del listado.
+### 4. Formulario de inscripción
 
----
-
-### 4️⃣ Formulario de inscripción
-
-Comprueba que el taller existe y muestra el formulario con nombre y correo. Si el taller está completo, avisa en lugar de mostrarlo.
+Permite introducir el nombre y el correo electrónico para inscribirse en un taller. Si el taller está completo, se informa al usuario.
 
 ```bash
 curl http://localhost:3000/talleres/1/inscripcion
 ```
 
-🖱️ **En la web:** botón "Inscribirme" en la ficha.
+### 5. Procesamiento de inscripciones
 
----
-
-### 5️⃣ Inscribirse
-
-El formulario envía nombre y correo. Si todo está bien, el servidor guarda la inscripción y **redirige a la ficha** (patrón PRG), para que recargar la página no repita la inscripción.
+El servidor valida los datos recibidos y registra la inscripción si se cumplen todos los requisitos. Después, redirige a la ficha del taller mediante el patrón **POST/Redirect/GET (PRG)**, evitando repetir la inscripción al recargar la página.
 
 ```bash
 curl -i -X POST \
@@ -141,46 +107,52 @@ curl -i -X POST \
   http://localhost:3000/talleres/1/inscripcion
 ```
 
-> 💡 Con `-i` se ve la respuesta `303` y la cabecera `Location`, que es la redirección.
+La opción `-i` permite consultar las cabeceras HTTP de la respuesta, incluida la redirección `303`.
 
-🖱️ **En la web:** el formulario de inscripción (botón "Inscribirme").
+### 6. Validaciones y gestión de errores
 
----
+La aplicación comprueba los siguientes aspectos antes de registrar una inscripción:
 
-### 6️⃣ Validaciones y errores
+- Existencia del taller.
+- Validez del nombre y del correo electrónico.
+- Disponibilidad de plazas.
+- Ausencia de inscripciones previas con el mismo correo en ese taller.
+- Validez del identificador del taller, que debe ser un entero positivo.
 
-El servidor comprueba, por este orden:
+Cuando los datos son incorrectos, se vuelve a mostrar el formulario con los errores correspondientes y se conservan los valores introducidos que sean válidos.
 
-- ✅ que el taller existe
-- ✅ que el nombre y el correo son válidos
-- ✅ que quedan plazas
-- ✅ que ese correo no está ya inscrito en ese taller
-- ✅ que un número manipulado en la dirección no rompe nada
-
-Todo lo que llega del navegador se trata como **no fiable**: del formulario solo se leen `nombre` y `email`, y el número del taller tiene que ser un entero positivo.
-
-| Caso | Resultado |
+| Situación | Respuesta |
 |---|---|
-| Número manipulado (`abc`, `-1`, `1.5`) | Error **400** |
-| Taller que no existe | Error **404** |
-| Datos mal, correo repetido o taller completo | Formulario con errores |
+| Identificador inválido (`abc`, `-1`, `1.5`) | Error HTTP 400. |
+| Taller inexistente | Error HTTP 404. |
+| Datos incorrectos | Formulario con errores. |
+| Correo ya inscrito | Formulario con errores. |
+| Taller completo | Formulario con errores. |
+
+Ejemplos de pruebas:
 
 ```bash
-# ❌ datos inválidos
-curl -X POST --data-urlencode "nombre=" --data-urlencode "email=mal" \
+# Datos inválidos
+curl -X POST \
+  --data-urlencode "nombre=" \
+  --data-urlencode "email=mal" \
   http://localhost:3000/talleres/1/inscripcion
 
-# ❌ correo ya inscrito
-curl -X POST --data-urlencode "nombre=Curro" --data-urlencode "email=currox@example.com" \
-  http://localhost:3000/talleres/1/inscripcion
-
-# ❌ taller completo
-curl -X POST --data-urlencode "nombre=Ana" --data-urlencode "email=ana@example.com" \
-  http://localhost:3000/talleres/3/inscripcion
-
-# ❌ taller inexistente y número manipulado
+# Taller inexistente
 curl -i http://localhost:3000/talleres/999
+
+# Identificador inválido
 curl -i http://localhost:3000/talleres/abc
 ```
 
-🖱️ **En la web:** el mismo formulario del punto 5 para los errores de datos, y enlaces de prueba a `/talleres/999` y `/talleres/abc` al pie del listado.
+La aplicación trata los datos recibidos del navegador como información no fiable y valida las entradas antes de procesarlas.
+
+## Tecnologías utilizadas
+
+- **Node.js:** entorno de ejecución de JavaScript.
+- **Express:** gestión del servidor y las rutas.
+- **EJS:** generación de páginas HTML mediante plantillas.
+
+## Consideraciones
+
+Los datos se almacenan únicamente en memoria. Al detener o reiniciar el servidor, se pierden los talleres modificados y las inscripciones realizadas durante la ejecución, según la implementación de la aplicación.
