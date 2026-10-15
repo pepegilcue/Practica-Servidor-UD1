@@ -4,7 +4,7 @@ Aplicación web para consultar los talleres de unas jornadas tecnológicas e ins
 
 Los datos se almacenan en memoria, por lo que las inscripciones se reinician al detener el servidor.
 
-**Chat de apoyo: Enviado por privado
+**Chat de apoyo: https://claude.ai/share/e64891a4-c394-4a72-ae99-2d1e37054663
 
 ## Instalación y ejecución
 
